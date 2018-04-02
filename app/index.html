@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="description" content="A description.">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Temporal Path</title>
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.1/dist/semantic.min.css">
+	<link rel="stylesheet" href="css/main.css">
+
+	<script
+	  src="https://code.jquery.com/jquery-3.3.1.min.js"
+	  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	  crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.1/dist/semantic.min.js"></script>
+	<script src="js/main.js"></script>
+</head>
+<body>
+	<div class="page">
+		<div class="ui grid">
+			<div class="thirteen wide column">
+				<div class="row filter-row">
+					<i class="file alternate outline icon filter-icon"></i>
+					<div class="ui labels filter-box">
+						<span class="filter-text">Filters:</span>
+						<a class="ui label filter-label">
+							Eillie Olmsen <i class="icon close"></i>
+						</a>
+						<a class="ui label filter-label">
+							Eillie Olmsen <i class="icon close"></i>
+						</a>
+					</div>
+					<div class="ui aggregate-box">
+						<span class="aggregate-text">Aggregate By: Day</span>
+						<div class="ui slider checkbox aggregate-radio">
+							<input type="checkbox" name="aggregate_by" id="checkbox-aggregate-by">
+							<label>&nbsp;</label>
+						</div>
+						<span class="aggregate-end-text">Month</span>
+					</div>
+				</div>
+				<div class="row">
+					<svg height="500"></svg>
+				</div>
+				<div class="ui divider"></div>
+				<div class="row">
+					<div class="ui large labels">
+						<div class="ui label">
+							<span>Title:&nbsp;</span>
+							<span>A Special Asparagus Season</span>
+						</div>
+						<div class="ui label">
+							<span>Author:&nbsp;</span>
+							<span>Eillie Olmsen</span>
+						</div>
+						<div class="ui label">
+							<span>Date:&nbsp;</span>
+							<span>7/3/2004</span>
+						</div>
+						<div class="ui label">
+							<span>Type:&nbsp;</span>
+							<span>News Article</span>
+						</div>
+						<a class="ui label next-article">
+							1/1 >>
+						</a>
+					</div>
+				</div>
+				<div class="row">ALDERWOOD - Local asparagus is on the stands early this year in Eastern Washington, catching both farmers and consumers off guard.
+Farmer Jack Varley, who sells his produce at a stand in Alderwood, says he's harvested asparagus early only three times in his 25 years of business.
+"Some years it's early and some years it's late," said Varley, "but the average is not like this, not two weeks early."
+Bill Clarke was certainly surprised Tuesday while shopping at Varley's vegetable stand.
+"Last year, I didn't get asparagus until the end of July, so it seems like a little bit early," said Clarke.
+Other crops, such as corn and wheat, also made an early appearance this season. Crop experts with the state say that's because we had a particularly warm April.
+At Hilda Dorfman's farm, roses, daisies, and geraniums framing her long dirt road all blossomed ahead of schedule.
+The former professor of Ecological Studies at Washington State University won't say global warming is to blame, but she will say we need to pay attention to when crops come early.
+"Certainly I think it's a cumulative thing and here's one more piece in the puzzle, or one more sign along the way that we're seeing some concrete evidence that we're heating up," she said. 
+In the meantime, Varley says sales are slow because customers simply don't expect asparagus this early. 
+"Wait for three or four days when people finally believe that, hey, we've got the asparagus here. Then we'll go through a lot of asparagus," he predicted.
+				</div>
+			</div>
+			<div id="col-entities" class="three wide column">
+				<div class="ui card">
+					<div class="content">
+						<div class="header">
+							<span><i class="red left floated square icon"></i></span>
+							<span>Authors</span>
+							<span><i class="right floated check square outline icon"></i></span>
+						</div>
+					</div>
+					<div class="content">
+						<div class="ui list">
+							<div class="item">Eillie Olmsen</div>
+							<div class="item">Jamie Smart</div>
+						</div>
+					</div>
+				</div>
+				<div class="ui card">
+					<div class="content">
+						<div class="header">
+							<span><i class="green left floated square icon"></i></span>
+							<span>Persons</span>
+							<span><i class="right floated check square outline icon"></i></span>
+						</div>
+					</div>
+					<div class="content">
+						<div class="ui list">
+							<div class="item">Jack Varley</div>
+							<div class="item">Bill Clarke</div>
+							<div class="item">Hilda Dorfman</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

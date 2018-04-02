@@ -1,0 +1,52 @@
+.page {
+	padding:5px;
+}
+
+.filter-row {
+	display:flex;
+	padding-top:5px;
+}
+
+.filter-icon {
+	padding-top:3px;
+	font-size: 175% !important;
+}
+
+.filter-box {
+	flex-grow: 1;
+	margin-top:-3px;
+	border: 1px solid #ccc;
+	border-radius:.28571429rem;
+	padding:2px;
+}
+
+.filter-label {
+	margin-bottom:0px !important;
+}
+
+.filter-text {
+	padding-left:5px; 
+	padding-right:5px;
+}
+
+.aggregate-box {
+	padding:2px;
+}
+
+.aggregate-text {
+	padding-left:10px;
+	padding-right:10px;
+}
+
+.aggregate-end-text {
+	padding-right:5px;
+}
+
+.aggregate-radio {
+	margin-top:3px;
+}
+
+.next-article {
+	background: white !important;
+	border: 1px solid #ccc !important;
+}

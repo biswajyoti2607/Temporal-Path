@@ -1,0 +1,39 @@
+@import 'normalize'
+@import 'helper'
+@import 'semantic'
+
+/* variables */
+$lightgrey = #999
+$linkColor = #555
+$grey = #777
+$black = #222
+$white = #fff
+
+html
+button
+input
+select
+textarea 
+  color: $white
+
+a
+a:visited
+  color: $linkColor
+  text-decoration: none
+
+a:hover
+  color: lighten($linkColor,10%)
+  
+body
+  color: $white
+  font-size: 1em
+  line-height: 1.4
+
+@media only screen and (min-width: 40em)
+  body
+    background: red
+
+
+@media only screen and (min-width: 80em)
+  body
+    background: white
