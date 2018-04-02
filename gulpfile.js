@@ -75,11 +75,18 @@ const imagesTask = function(){
     .pipe(gulp.dest(dist + 'images/')); 
 };
 
+const dataTask = function(){
+  return gulp.src(app + 'data/*.json')
+    .pipe($.size({ title : 'data' }))
+    .pipe(gulp.dest(dist + 'data/')); 
+};
+
 const watchTask = function(){
   gulp.watch(app + 'css/*.css', ['css']);
   //gulp.watch(app + 'stylus/*.styl', ['styles']);
   gulp.watch(app + 'index.html', ['html']);
   gulp.watch(app + 'scripts/**/*.js', ['scripts']);
+  gulp.watch(app + 'data/*.json', ['data']);
 };
 
 gulp.task('scripts', scriptsTask);
@@ -88,6 +95,7 @@ gulp.task('html', htmlTask);
 gulp.task('css', cssTask);
 gulp.task('serve', serveTask);
 gulp.task('images', imagesTask);
+gulp.task('data', dataTask);
 gulp.task('watch', watchTask);
 
 // remove bundels
@@ -101,6 +109,7 @@ gulp.task('default', ['build', 'serve', 'watch']);
 // waits until clean is finished then builds the project
 gulp.task('build', ['clean'], function(){
   imagesTask();
+  dataTask();
   htmlTask();
   scriptsTask();
   //stylusTask();

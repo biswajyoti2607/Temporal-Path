@@ -2,12 +2,10 @@
 
 Visual Analytics Tool to analyze news articles
 
-##Requirements
+## Requirements
 * node ([Install](https://nodejs.org/en/))
 * npm ([Install](https://nodejs.org/en/))
-* gulp
-
-Install
+* gulp (Install using below command)
 
 ```
 $ npm install gulp -g
@@ -30,12 +28,8 @@ Builds the application and starts a webserver with livereload. By default the we
 $ npm start
 ```
 
-Javascript entry file: `app/scripts/main.js` <br />
-CSS entry file: `app/stylus/main.styl`<br />
-
-Include third-party CSS via `@import 'path/to/your/third-party-styles.css'` at the top of the main.styl file.
-
-
+Javascript entry file: `app/scripts/app.js` <br />
+CSS entry file: `app/css/main.css`<br />
 
 ## Build
 
