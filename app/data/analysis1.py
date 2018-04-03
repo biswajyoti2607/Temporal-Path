@@ -10,6 +10,7 @@ author_map = {}
 date_map = {}
 timeline = {}
 timeline["nodes"] = []
+entities = {}
 for filename in glob.glob(os.path.join('./raw_articles', '*.txt')):
 	print filename
 	if filename.startswith('./raw_articles\\11'):
@@ -90,6 +91,7 @@ for key in date_map_keys:
 print("-----------------------------------------------------------------------------")
 for key, value in sorted(author_map.iteritems(), key=lambda (k,v): (v,k), reverse=True):
 	print(key + " : " + str(value))
+entities["Authors"] = author_map
 	
 print("-----------------------------------------------------------------------------")
 timeline["nodes"].sort(key=lambda x: x["date"], reverse=False)
@@ -114,3 +116,6 @@ for id, node in enumerate(timeline["nodes"]):
 		
 with open('timeline.json', 'w') as fp:
 	json.dump(timeline, fp)
+
+with open('entities.json', 'w') as fp:
+	json.dump(entities, fp)

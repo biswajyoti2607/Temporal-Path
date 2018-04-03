@@ -66,6 +66,7 @@ export default class ArcDiagram {
 	
 	_drawNodes(nodes) {
 		let radius = this._radius;
+		let raiseEvent = this._raiseEvent;
 		d3.select("#" + this._id + "-g").selectAll(".node")
 			.data(nodes)
 			.enter()
@@ -75,18 +76,21 @@ export default class ArcDiagram {
 			.attr("cy", function(d, i) { return d.y; })
 			.attr("r",  function(d, i) { return radius; })
 			.style("fill",   function(d, i) { return "#ccc"; })
-			.on("mouseover", function(d) { window.dispatchEvent(new CustomEvent('dateBrushOver', { detail: d })); })
-			.on("mouseout", function(d) { window.dispatchEvent(new CustomEvent('dateBrushOut', { detail: d })); })
+			.on("mouseover", function(d) { 
+				raiseEvent("brushOver", d);
+			})
+			.on("mouseout", function(d) { 
+				raiseEvent("brushOut", d);
+			})
 			.on("click", function(d) {
 				if(d.state.selected) {
 					d.state.selected = false;
-					window.dispatchEvent(new CustomEvent('dateRemoveSelection', { detail: d })); 
+					raiseEvent("removeSelection", d);
 				} else {
 					d.state.selected = true;
-					window.dispatchEvent(new CustomEvent('dateAddSelection', { detail: d })); 
+					raiseEvent("addSelection", d);
 				}
 			});
-
 	}
 	
 	_drawLinks(links) {
@@ -102,6 +106,8 @@ export default class ArcDiagram {
 
 		// add links
 		var yshift = this._yfixed;
+		var raiseEvent = this._raiseEvent;
+		var raiseEventForPath = this._raiseEventForPath;
 		d3.select("#" + this._id + "-g").selectAll(".link")
 			.data(links)
 			.enter()
@@ -129,16 +135,66 @@ export default class ArcDiagram {
 				// return path for arc
 				return arc(points);
 			})
-			.on("mouseover", function(d) { window.dispatchEvent(new CustomEvent('dateConnectionBrushOver', { detail: d })); })
-			.on("mouseout", function(d) { window.dispatchEvent(new CustomEvent('dateConnectionBrushOut', { detail: d })); })
+			.on("mouseover", function(d) { 
+				raiseEvent("brushOver", d.source);
+				raiseEvent("brushOver", d.target);
+				raiseEventForPath("brushOver", d);
+			})
+			.on("mouseout", function(d) { 
+				raiseEvent("brushOut", d.source);
+				raiseEvent("brushOut", d.target);
+				raiseEventForPath("brushOut", d);
+			})
 			.on("click", function(d) {
 				if(d.state.selected) {
 					d.state.selected = false;
-					window.dispatchEvent(new CustomEvent('dateConnectionRemoveSelection', { detail: d })); 
+					raiseEvent("removeSelection", d.source); 
+					raiseEvent("removeSelection", d.target); 
+					raiseEventForPath("removeSelection", d);
 				} else {
 					d.state.selected = true;
-					window.dispatchEvent(new CustomEvent('dateConnectionAddSelection', { detail: d })); 
+					raiseEvent("addSelection", d.source);
+					raiseEvent("addSelection", d.target);
+					raiseEventForPath("addSelection", d);
 				}
 			});
+	}
+	
+	_raiseEvent(e, d) {
+		window.dispatchEvent(new CustomEvent('visEvent', { 
+			detail: {
+				event: e,
+				entity: "Date",
+				value: d.date
+			}
+		}));
+		window.dispatchEvent(new CustomEvent('visEvent', { 
+			detail: {
+				event: e,
+				entity: "Articles",
+				value: d.articles
+			}
+		}));
+		for(let articleId in d.articles) {
+			if(d.articles[articleId].hasOwnProperty("author")) {
+				window.dispatchEvent(new CustomEvent('visEvent', { 
+					detail: {
+						event: e,
+						entity: "Author",
+						value: d.articles[articleId].author
+					}
+				}));
+			}
+		}
+	}
+	
+	_raiseEventForPath(e, d) {
+		window.dispatchEvent(new CustomEvent('visEvent', { 
+			detail: {
+				event: e,
+				entity: "Connection",
+				value: d
+			}
+		}));
 	}
 }
