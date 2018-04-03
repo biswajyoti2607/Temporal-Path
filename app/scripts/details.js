@@ -4,7 +4,7 @@ export default class DetailsPane {
 	}
 	
 	updatePane(data) {
-		this._articlesList = data.articles;
+		this._articlesList = data;
 		$("#" + this._idPrefix + "-list").text("");
 		for(let articleId in this._articlesList) {
 			this._addNewArticle(this._articlesList[articleId], articleId, this._articlesList.length);
