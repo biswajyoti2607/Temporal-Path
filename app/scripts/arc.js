@@ -4,12 +4,12 @@ export default class ArcDiagram {
 	constructor(data, id) {
 		this._graph = data;
 		this._id = id;
-		this._width  = 1500;           // width of svg image
-		this._height = 600;           // height of svg image
-		this._margin = 20;            // amount of margin around plot area
-		this._pad = this._margin / 2;       // actual padding amount
-		this._radius = 4;             // fixed node radius
-		this._yfixed = this._height - this._pad - this._radius;  // y position for all nodes
+		this._margin = 20;															// amount of margin around plot area
+		this._pad = this._margin / 2;												// actual padding amount
+		this._radius = 3;															// fixed node radius
+		this._width  = $("#" + this._id).parent().width();			// width of svg image
+		this._height = this._width / 2.4;         						// height of svg image
+		this._yfixed = this._height - this._pad - this._radius;						// y position for all nodes
 	}
 	
 	draw() {
@@ -42,22 +42,17 @@ export default class ArcDiagram {
 	}
 	
 	_linearLayout(nodes) {
-		// sort nodes by group
-		/*
-		nodes.sort(function(a, b) {
-			return a.group - b.group;
-		})
-		*/
-
 		// used to scale node index to x position
-		var xscale = d3.scale.linear()
-			.domain([0, nodes.length - 1])
+		var xscale = d3.time.scale()
+			.domain([new Date(2004,0,1), new Date(2004,11,31)])
 			.range([this._radius, this._width - this._margin - this._radius]);
 
 		// calculate pixel location for each node
 		var yshift = this._yfixed;
 		nodes.forEach(function(d, i) {
-			d.x = xscale(i);
+			let currDate = new Date(d.date);
+			let modDate = new Date(2004, currDate.getMonth(), currDate.getDate());
+			d.x = xscale(modDate);
 			d.y = yshift;
 			d.state = {};
 			d.state.selected = false;
@@ -74,8 +69,7 @@ export default class ArcDiagram {
 			.attr("class", "node")
 			.attr("cx", function(d, i) { return d.x; })
 			.attr("cy", function(d, i) { return d.y; })
-			.attr("r",  function(d, i) { return radius; })
-			.style("fill",   function(d, i) { return "#ccc"; })
+			.attr("r",  function(d, i) { return 0.4 * d.articles.length + 1.6; })
 			.on("mouseover", function(d) { 
 				raiseEvent("brushOver", d);
 			})
@@ -105,7 +99,7 @@ export default class ArcDiagram {
 			.angle(function(d) { return radians(d); });
 
 		// add links
-		var yshift = this._yfixed;
+		var yshift = this._yfixed - 3;
 		var raiseEvent = this._raiseEvent;
 		var raiseEventForPath = this._raiseEventForPath;
 		d3.select("#" + this._id + "-g").selectAll(".link")

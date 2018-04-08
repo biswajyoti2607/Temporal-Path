@@ -38,7 +38,7 @@ export default class DetailsPane {
 						'</a>' +
 					'</div>' +
 				'</div>' +
-				'<div class="row"><p>' + data.text + '</p></div>' +
+				'<div class="row details-text"><p>' + data.text + '</p></div>' +
 			'</div>');
 	}
 }
