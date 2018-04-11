@@ -60,13 +60,13 @@ for filename in glob.glob(os.path.join('./raw_articles', '*.txt')):
 			is_present = False
 			for node in timeline["nodes"]:
 				if node["date"] == str(date):
-					node["articles"].append({"title": title, "author": author, "date": date.strftime('%d, %b %Y'), "type": type, "text": str(text_content)})
+					node["articles"].append({"title": title, "Authors": author, "date": date.strftime('%d, %b %Y'), "type": type, "text": str(text_content)})
 					is_present = True
 			if not is_present:
 				node = {}
 				node["date"] = str(date)
 				node["articles"] = []
-				node["articles"].append({"title": title, "author": author, "date": date.strftime('%d, %b %Y'), "type": type, "text": str(text_content)})
+				node["articles"].append({"title": title, "Authors": author, "date": date.strftime('%d, %b %Y'), "type": type, "text": str(text_content)})
 				timeline["nodes"].append(node)
 for key in title_map.keys():
 	if title_map[key] == 1:
@@ -100,8 +100,8 @@ for id, node in enumerate(timeline["nodes"]):
 	for article in node["articles"]:
 		for id2, node2 in enumerate(timeline["nodes"]):
 			for article2 in node2["articles"]:
-				if article["author"] == article2["author"] and article["author"] != "" and id != id2:
-					print(str(id) + " , " + str(id2) + " = " + article["author"])
+				if article["Authors"] == article2["Authors"] and article["Authors"] != "" and id != id2:
+					print(str(id) + " , " + str(id2) + " = " + article["Authors"])
 					is_present = False
 					for link_stored in timeline["links"]:
 						if (link_stored["source"] == id and link_stored["target"] == id2):

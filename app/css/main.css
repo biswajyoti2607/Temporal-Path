@@ -49,6 +49,7 @@
 .next-article {
 	background: white !important;
 	border: 1px solid #ccc !important;
+	float: right !important;
 }
 
 .arc-parent {
@@ -61,31 +62,26 @@
 }
 
 .node {
-    stroke: #eeeeee;
-	fill: #777777;
     stroke-weight: 1px;
 	cursor: pointer;
-}
-
-.node:hover {
-	stroke: #555555;
-	stroke-opacity: 1;
 }
 
 .link {
     fill: none;
-    stroke: #888888;
-    stroke-weight: 1px;
     stroke-opacity: 0.5;
 	cursor: pointer;
 }
 
-.link:hover {
-	stroke: #555555;
-	stroke-opacity: 1;
+.details-text {
+	/* height: calc(100vh - 805px); */
+	/* overflow-y:auto; */
 }
 
-.details-text {
-	height: calc(100% - 805px);
-	overflow-y:scroll;
+.mouse-pointer {
+	cursor: pointer;
+}
+
+.entities-item {
+	border-radius: 3px !important;
+	padding-left:5px !important;
 }

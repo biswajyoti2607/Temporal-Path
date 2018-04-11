@@ -6,10 +6,12 @@ export default class ArcDiagram {
 		this._id = id;
 		this._margin = 20;															// amount of margin around plot area
 		this._pad = this._margin / 2;												// actual padding amount
-		this._radius = 3;															// fixed node radius
-		this._width  = $("#" + this._id).parent().width();			// width of svg image
-		this._height = this._width / 2.4;         						// height of svg image
+		this._radius = 4;															// fixed node radius
+		this._width  = $("#" + this._id).parent().width() - this._margin;			// width of svg image
+		this._height = this._width / 2.4;         									// height of svg image
 		this._yfixed = this._height - this._pad - this._radius;						// y position for all nodes
+		this._baseColor = "#cccccc";
+		this._brushedColor = "#888888";
 	}
 	
 	draw() {
@@ -29,6 +31,7 @@ export default class ArcDiagram {
 			d.target = isNaN(d.target) ? d.target : graph.nodes[d.target];
 			d.state = {};
 			d.state.selected = false;
+			d.state.brushed = false;
 		});
 
 		// must be done AFTER links are fixed
@@ -39,6 +42,65 @@ export default class ArcDiagram {
 
 		// draw nodes last
 		this._drawNodes(this._graph.nodes);
+	}
+	
+	redraw(event, color) {
+		let baseColor = this._baseColor;
+		let brushedColor = color;
+		d3.select("#" + this._id + "-g").selectAll(".node")
+			.attr("fill", function(d, i) {
+				if(d.state.brushed || d.state.selected) {
+					return brushedColor;
+				} else {
+					return baseColor;
+				}
+			});
+		d3.select("#" + this._id + "-g").selectAll(".link")
+			.attr("stroke", function(d, i) {
+				if(d.source.state.brushed || d.target.state.brushed) {
+					return brushedColor;
+				} else {
+					return baseColor;
+				}
+			})
+			.attr("stroke-opacity", function(d, i) {
+				if(d.source.state.brushed || d.target.state.brushed) {
+					return "1";
+				}
+				return "0.5";
+			})
+			.attr("opacity", function(d, i) {
+				if(!(d.source.state.brushed || d.target.state.brushed) && event !== "brushOut") {
+					return "0";
+				}
+				return "1";
+			});
+	}
+	
+	brush(event, entity, value, color) {
+		for(let nodeId in this._graph.nodes) {
+			for(let articleId in this._graph.nodes[nodeId].articles) {
+				if(this._graph.nodes[nodeId].articles[articleId].hasOwnProperty(entity)) {
+					if(Array.isArray(this._graph.nodes[nodeId].articles[articleId][entity])) {
+						console.log(this._graph.nodes[nodeId].articles[articleId][entity]);
+						for(let entityId in this._graph.nodes[nodeId].articles[articleId][entity]) {
+							if(this._graph.nodes[nodeId].articles[articleId][entity][entityId] === value) {
+								this._graph.nodes[nodeId].state.brushed = (event === "brushOver"? true : false);
+							}
+						}
+					} else {
+						if(this._graph.nodes[nodeId].articles[articleId][entity] === value) {
+							this._graph.nodes[nodeId].state.brushed = (event === "brushOver"? true : false);
+						}
+					}
+				}
+			}
+		}
+		this.redraw(event, color);
+	}
+	
+	select(event) {
+		this.redraw(event, this._brushedColor);
 	}
 	
 	_linearLayout(nodes) {
@@ -56,12 +118,14 @@ export default class ArcDiagram {
 			d.y = yshift;
 			d.state = {};
 			d.state.selected = false;
+			d.state.brushed = false;
 		});
 	}
 	
 	_drawNodes(nodes) {
-		let radius = this._radius;
 		let raiseEvent = this._raiseEvent;
+		let baseColor = this._baseColor;
+		let brushedColor = this._brushedColor;
 		d3.select("#" + this._id + "-g").selectAll(".node")
 			.data(nodes)
 			.enter()
@@ -70,19 +134,25 @@ export default class ArcDiagram {
 			.attr("cx", function(d, i) { return d.x; })
 			.attr("cy", function(d, i) { return d.y; })
 			.attr("r",  function(d, i) { return 0.4 * d.articles.length + 1.6; })
+			.attr("fill", function(d, i) {
+				return baseColor;
+			})
+			.attr("stroke", function(d, i) {
+				return brushedColor;
+			})
 			.on("mouseover", function(d) { 
-				raiseEvent("brushOver", d);
+				raiseEvent("brushOver", d, brushedColor);
 			})
 			.on("mouseout", function(d) { 
-				raiseEvent("brushOut", d);
+				raiseEvent("brushOut", d, brushedColor);
 			})
 			.on("click", function(d) {
 				if(d.state.selected) {
 					d.state.selected = false;
-					raiseEvent("removeSelection", d);
+					raiseEvent("removeSelection", d, brushedColor);
 				} else {
 					d.state.selected = true;
-					raiseEvent("addSelection", d);
+					raiseEvent("addSelection", d, brushedColor);
 				}
 			});
 	}
@@ -99,9 +169,11 @@ export default class ArcDiagram {
 			.angle(function(d) { return radians(d); });
 
 		// add links
-		var yshift = this._yfixed - 3;
-		var raiseEvent = this._raiseEvent;
-		var raiseEventForPath = this._raiseEventForPath;
+		let yshift = this._yfixed;
+		let raiseEvent = this._raiseEvent;
+		let raiseEventForPath = this._raiseEventForPath;
+		let baseColor = this._baseColor;
+		let brushedColor = this._brushedColor;
 		d3.select("#" + this._id + "-g").selectAll(".link")
 			.data(links)
 			.enter()
@@ -129,65 +201,79 @@ export default class ArcDiagram {
 				// return path for arc
 				return arc(points);
 			})
+			.attr("stroke", function(d, i) {
+				return baseColor;
+			})
+			.attr("stroke-opacity", function(d, i) {
+				return "0.5"
+			})
+			.attr("stroke-width", function(d, i) {
+				return "1px";
+			})
 			.on("mouseover", function(d) { 
-				raiseEvent("brushOver", d.source);
-				raiseEvent("brushOver", d.target);
-				raiseEventForPath("brushOver", d);
+				raiseEvent("brushOver", d.source, brushedColor);
+				raiseEvent("brushOver", d.target, brushedColor);
+				raiseEventForPath("brushOver", d, brushedColor);
 			})
 			.on("mouseout", function(d) { 
-				raiseEvent("brushOut", d.source);
-				raiseEvent("brushOut", d.target);
-				raiseEventForPath("brushOut", d);
+				raiseEvent("brushOut", d.source, brushedColor);
+				raiseEvent("brushOut", d.target, brushedColor);
+				raiseEventForPath("brushOut", d, brushedColor);
 			})
 			.on("click", function(d) {
 				if(d.state.selected) {
 					d.state.selected = false;
-					raiseEvent("removeSelection", d.source); 
-					raiseEvent("removeSelection", d.target); 
-					raiseEventForPath("removeSelection", d);
+					raiseEvent("removeSelection", d.source, brushedColor); 
+					raiseEvent("removeSelection", d.target, brushedColor); 
+					raiseEventForPath("removeSelection", d, brushedColor);
 				} else {
 					d.state.selected = true;
-					raiseEvent("addSelection", d.source);
-					raiseEvent("addSelection", d.target);
-					raiseEventForPath("addSelection", d);
+					raiseEvent("addSelection", d.source, brushedColor);
+					raiseEvent("addSelection", d.target, brushedColor);
+					raiseEventForPath("addSelection", d, brushedColor);
 				}
 			});
 	}
 	
-	_raiseEvent(e, d) {
+	_raiseEvent(e, d, color) {
 		window.dispatchEvent(new CustomEvent('visEvent', { 
 			detail: {
 				event: e,
 				entity: "Date",
-				value: d.date
+				value: d.date,
+				color: color
 			}
 		}));
 		window.dispatchEvent(new CustomEvent('visEvent', { 
 			detail: {
 				event: e,
 				entity: "Articles",
-				value: d.articles
+				value: d.articles,
+				color: color
 			}
 		}));
+		let authors = [];
 		for(let articleId in d.articles) {
-			if(d.articles[articleId].hasOwnProperty("author")) {
+			if(d.articles[articleId].hasOwnProperty("Authors") && d.articles[articleId].Authors !== "") {
 				window.dispatchEvent(new CustomEvent('visEvent', { 
 					detail: {
 						event: e,
-						entity: "Author",
-						value: d.articles[articleId].author
+						entity: "Authors",
+						value:  d.articles[articleId].Authors,
+						color: color
 					}
 				}));
 			}
 		}
 	}
 	
-	_raiseEventForPath(e, d) {
+	_raiseEventForPath(e, d, color) {
 		window.dispatchEvent(new CustomEvent('visEvent', { 
 			detail: {
 				event: e,
 				entity: "Connection",
-				value: d
+				value: d,
+				color: color
 			}
 		}));
 	}
