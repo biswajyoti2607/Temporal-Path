@@ -1,7 +1,5 @@
 from nltk.tag.stanford import StanfordNERTagger
 from nltk.tokenize import word_tokenize
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.decomposition import LatentDirichletAllocation
 import re
 import json
 
@@ -12,7 +10,8 @@ import json
 # NER: https://pythonprogramming.net/named-entity-recognition-stanford-ner-tagger/
 # More useful chunking: https://stackoverflow.com/questions/30664677/extract-list-of-persons-and-organizations-using-stanford-ner-tagger-in-nltk
 # split caps words: http://code.activestate.com/recipes/440698-split-string-on-capitalizeduppercase-char/
-# Topic Modeling: https://medium.com/mlreview/topic-modeling-with-scikit-learn-e80d33668730
+
+# do topic modeling too! (sklearn)
 
 def get_continuous_chunks(tagged_sent):
     continuous_chunk = []
@@ -55,12 +54,6 @@ def process_text(text):
     # Preprocessing data
     text = split_on_caps(text)
 
-    return text
-
-
-def entity_extraction(text):
-    text = process_text(text)
-
     # NER
     tokenized_text = word_tokenize(text)
     classified_text = st.tag(tokenized_text)
@@ -84,35 +77,6 @@ def entity_extraction(text):
     return final_entities
 
 
-# --------------------------------------------------Topic Modeling-----------------------------------------------
-def lda_to_topics_dict(model, feature_names, num_top_words):
-    topics_dict = {}
-    for topic_idx, topic in enumerate(model.components_):
-        name = "Topic %d:" % (topic_idx)
-        topic_list = [feature_names[i]
-                  for i in topic.argsort()[:-num_top_words - 1:-1]]
-        topics_dict[name] = topic_list
-    return topics_dict
-
-def documents_to_topics(documents, num_features=1000, num_topics=10, num_top_words=10):
-    # max-df to remove terms that appear too frequently: ignore terms that appear in more than max_df (0.5) of documents,
-    # min-df to remove terms that dont appear enough: ignore terms that appear in less than min_df(0.5) of documents: 1 here
-    # LDA can only use raw term counts for LDA because it is a probabilistic graphical model
-    # default: dont ignore any terms!!
-    tf_vectorizer = CountVectorizer(max_df=1.0, min_df=1, max_features=num_features, stop_words='english')
-    tf = tf_vectorizer.fit_transform(documents)
-    tf_feature_names = tf_vectorizer.get_feature_names()
-
-    # Run LDA (more max_iter better!)
-    lda = LatentDirichletAllocation(n_components=num_topics, max_iter=100, learning_method='online',
-                                    learning_offset=50., random_state=0).fit(tf)
-
-    topics = lda_to_topics_dict(lda, tf_feature_names, num_top_words)
-
-    return topics
-
-
-
 st = StanfordNERTagger('./Stanford_NER/english.conll.4class.distsim.crf.ser.gz',
  					   './Stanford_NER/stanford-ner.jar',
  					   encoding='utf-8')
@@ -134,8 +98,6 @@ dataset_entities = {}
 # key: tuple, value: count
 # add author as ("author", 'AUTHOR'), value;count
 
-article_list_for_topics_modeling = []
-
 # -------------------------------------------------------article entities----------------------------------------------
 for article_info in nodes:
     # allow dictionary to have multiple entries! dict key is date!
@@ -145,7 +107,7 @@ for article_info in nodes:
     for article in article_info['articles']:
         text = article['text']
 
-        entities = entity_extraction(text)
+        entities = process_text(text)
 
         print(entities)
         # new node in article for article entities
@@ -155,7 +117,6 @@ for article_info in nodes:
         article['locations'] = []
         article['organizations'] = []
         article['misc'] = []
-
 
         for entity, category in entities:
             if category == 'PERSON':
@@ -178,14 +139,6 @@ for article_info in nodes:
                 dataset_entities[tuple_entity] = 1
             else:
                 dataset_entities[tuple_entity] += 1
-
-        # topic modeling
-        text = process_text(text)
-        # default for docouments_to_topics num_features=1000, num_topics=10, num_top_words=10
-        topics = documents_to_topics([text])
-        article['topics'] = topics
-
-        article_list_for_topics_modeling.append(text)
 
 # ------------------------------------full dataset entities------------------------------------------------------------
 total_people_list = []
@@ -222,10 +175,6 @@ for key, entity_list in all_entities.items():
     all_entities[key] = sorted(entity_list, key=lambda tup: tup[1], reverse=True)
 
 print(all_entities)
-
-# topic modeling
-dataset_topics = documents_to_topics(article_list_for_topics_modeling,num_topics=20)
-all_entities['topics'] = dataset_topics
 
 full_json['dataset entities'] = all_entities
 

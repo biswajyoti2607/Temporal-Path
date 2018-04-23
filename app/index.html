@@ -9,6 +9,8 @@
 	<title>Temporal Path</title>
 
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.1/dist/semantic.min.css">
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simditor/2.3.6/styles/simditor.css" />
 	<link rel="stylesheet" href="css/main.css">
 
 	<script
@@ -16,6 +18,7 @@
 	  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
 	  crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.3.1/dist/semantic.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<script src="js/main.js"></script>
 </head>
 <body>
@@ -23,15 +26,9 @@
 		<div class="ui grid">
 			<div class="thirteen wide column">
 				<div class="row filter-row">
-					<i class="file alternate outline icon filter-icon"></i>
+					<i id="notes-button" class="file alternate outline icon filter-icon mouse-pointer"></i>
 					<div class="ui labels filter-box">
 						<span class="filter-text">Filters:</span>
-						<a class="ui label filter-label">
-							Eillie Olmsen <i class="icon close"></i>
-						</a>
-						<a class="ui label filter-label">
-							Eillie Olmsen <i class="icon close"></i>
-						</a>
 					</div>
 					<div class="ui aggregate-box">
 						<span class="aggregate-text">Aggregate By: Day</span>
@@ -45,13 +42,43 @@
 				<div class="row arc-parent">
 					<center><svg id="arc-timeline"></svg></center>
 				</div>
-				<div class="ui divider"></div>
-				<div id="article-list">
-					
+				<div class="row arc-limit">
+					<center><div id="timeline-range"></div></center>
 				</div>
+				<div class="ui divider"></div>
+				<div id="article-list"></div>
 			</div>
-			<div id="entities-col" class="three wide column">
-				
+			<div id="entities-col" class="three wide column"></div>
+		</div>
+	</div>
+	<div id="article-fact-modal" class="ui modal">
+		<div class="header"></div>
+		<div class="content"></div>
+	</div>
+	<div id="notes-modal" class="ui modal fullscreen">
+		<i class="close icon"></i>
+		<div class="header">Notes</div>
+		<div class="content">
+			<div class="ui grid">
+				<div class="two wide column">
+					<span>Select Session Notes</span>
+					<div class="ui divider"></div>
+					<div class="ui form">
+						<div id="notes-list" class="grouped fields">
+							<label></label>
+						</div>
+					</div>
+				</div>
+				<div class="seven wide column">
+					<span>Selected Session Notes</span>
+					<div class="ui divider"></div>
+					<textarea id="notes-selected-text" style="width:100%;height:500px;"></textarea>
+				</div>
+				<div class="seven wide column">
+					<span>Current Session Notes</span>
+					<div class="ui divider"></div>
+					<textarea id="notes-current-text" style="width:100%;height:500px;"></textarea>
+				</div>
 			</div>
 		</div>
 	</div>
